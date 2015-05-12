@@ -1,0 +1,114 @@
+1 > TowTruck.all
+
+  TowTruck Load (0.5ms)  SELECT "tow_trucks".* FROM "tow_trucks"
+=> [#<TowTruck:0x007f84ae4ab0e8
+  id: 1,
+  make: "International",
+  model: "DT 444E",
+  year: 1998,
+  acquired_at: Mon, 11 May 2009,
+  last_service_at: Sun, 11 Jan 2015,
+  mileage: 282453,
+  notes: "Transmission rebuilt December 2012">,
+ #<TowTruck:0x007f84ae4aa878
+  id: 2,
+  make: "Freightliner",
+  model: "FL70",
+  year: 1997,
+  acquired_at: Sun, 11 May 2008,
+  last_service_at: Tue, 11 Nov 2014,
+  mileage: 171es: "Front bumper needs work for inspection">,
+ #<TowTruck:0x007f84ae4aa030 id: 3, make: "International", model: "4700", year: 2001, acquired_at: Wed, 11 May 2011, last_service_at: Wed, 11 Jun 2014, mileage: 170338, notes: "">]
+
+2 > TowTruck.last
+
+  TowTruck Load (0.8ms)  SELECT  "tow_trucks".* FROM "tow_trucks"  ORDER BY "tow_trucks"."id" DESC LIMIT 1
+=> #<TowTruck:0x007f84ae218a60 id: 3, make: "International", model: "4700", year: 2001, acquired_at: Wed, 11 May 2011, last_service_at: Wed, 11 Jun 2014, mileage: 170338, notes: "">
+
+3 > Vehicle.find_by(vin: "D0985DF1593A350A4")
+
+  Vehicle Load (2.7ms)  SELECT  "vehicles".* FROM "vehicles" WHERE "vehicles"."vin" = $1 LIMIT 1  [["vin", "D0985DF1593A350A4"]]
+=> #<Vehicle:0x007f84b0c9bf80
+ id: 7,
+ make: "Ford",
+ model: "Focus",
+ color: "blue",
+ year: 1996,
+ vin: "D0985DF1593A350A4",
+ category: "car",
+ acquired_at: Fri, 24 Apr 2015,
+ released_at: Tue, 28 Apr 2015,
+ fee: #<BigDecimal:7f84ab292db8,'0.2153E3',18(18)>,
+ is_paid: true,
+ notes: "">
+
+ 4 > Vehicle.order(:acquired_at)
+
+ 5 > Vehicle.where("color = 'silver'").order("make")
+
+ 6 > Vehicle.where("color = 'red'").where("category = 'car'").where("make = 'Honda'")
+
+=> [#<Vehicle:0x007fa5f88e99a0
+  id: 9,
+  make: "Honda",
+  model: "Fit",
+  color: "red",
+  year: 2012,
+  vin: "9B0A324912B5675F1",
+  category: "car",
+  acquired_at: Sat, 02 May 2015,
+  released_at: Tue, 05 May 2015,
+  fee: #<BigDecimal:7fa5f8869778,'0.1746E3',18(18)>,
+  is_paid: true,
+  notes: "">]
+
+
+ 7 > Vehicle.count(:category => 'motorcycle')
+
+  (0.4ms)  SELECT COUNT(*) FROM "vehicles"
+=> 20
+
+or:
+
+Vehicle.where(category: 'motorcycle').count
+
+=> 5
+
+8 > Vehicle.where(released_at: nil).count
+
+0.5ms)  SELECT COUNT(*) FROM "vehicles" WHERE "vehicles"."released_at" IS NULL
+=> 6
+
+ 9 > TowTruck.where("mileage > ?", 200000)
+
+   TowTruck Load (0.7ms)  SELECT "tow_trucks".* FROM "tow_trucks" WHERE (mileage > 200000)
+=> [#<TowTruck:0x007fa5f70337a8
+  id: 1,
+  make: "International",
+  model: "DT 444E",
+  year: 1998,
+  acquired_at: Mon, 11 May 2009,
+  last_service_at: Sun, 11 Jan 2015,
+  mileage: 282453,
+  notes: "Transmission rebuilt December 2012">]
+ 
+ 10 > TowTruck.where('last_service_at > ?', 8.months.ago)
+
+ 11 > Vehicle.average(:fee)
+
+ 12 > Vehicle.where.not(fee: nil).order(fee: :desc).limit(3)
+
+ 13 > Vehicle.where.not(fee: nil).where(is_paid: false)
+
+ 14 > Vehicle.where.not(released_at: nil).order(released_at: :desc)
+
+ 15 > Vehicle.where.not(notes: nil)
+
+ 16 > Vehicle.where('year < ?', 2000).pluck(:vin)
+
+ 17 > Vehicle.where(color: 'silver').order(year: :desc).pluck(:make, :model, :year)
+  
+ 18 > Vehicle.sum(is_paid = true)
+ 
+
+
